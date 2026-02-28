@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Manage Schedules - TrackMyWaste{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="fas fa-calendar"></i> Manage Collection Schedules
+</h2>
+
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Add New Schedule</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_schedule') }}">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Area *</label>
+                    <select class="form-select" name="area" required>
+                        <option value="North Zone">North Zone</option>
+                        <option value="South Zone">South Zone</option>
+                        <option value="East Zone">East Zone</option>
+                        <option value="West Zone">West Zone</option>
+                        <option value="Central">Central</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Day of Week *</label>
+                    <select class="form-select" name="day_of_week" required>
+                        <option value="0">Monday</option>
+                        <option value="1">Tuesday</option>
+                        <option value="2">Wednesday</option>
+                        <option value="3">Thursday</option>
+                        <option value="4">Friday</option>
+                        <option value="5">Saturday</option>
+                        <option value="6">Sunday</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Time *</label>
+                    <input type="time" class="form-control" name="time" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Assign Worker</label>
+                    <select class="form-select" name="worker_id">
+                        <option value="">Unassigned</option>
+                        {% for worker in workers %}
+                            <option value="{{ worker._id }}">{{ worker.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-info">Add Schedule</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-info">
+                    <tr>
+                        <th>Area</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Worker</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                        <tr>
+                            <td>{{ schedule.area }}</td>
+                            <td>{{ ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][schedule.day_of_week] }}</td>
+                            <td>{{ schedule.time }}</td>
+                            <td>
+                                {% if schedule.worker_id %}
+                                    Assigned
+                                {% else %}
+                                    <span class="text-muted">Unassigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.delete_schedule', schedule_id=schedule._id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto text-center">
+        <h1 class="display-4 mb-4">
+            <i class="fas fa-recycle text-success"></i> TrackMyWaste
+        </h1>
+        <p class="lead">A Web-based Waste Management and Monitoring System</p>
+        <p>Report garbage collection issues, track complaint status, and view collection schedules all in one place.</p>
+        
+        {% if not session.get('user_id') %}
+            <div class="mt-5">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg me-2">Get Started</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-success btn-lg">Login</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                <h5 class="card-title">Report Issues</h5>
+                <p class="card-text">Submit complaints about missed pickups, overflowing bins, or other waste management issues.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-tasks fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Track Status</h5>
+                <p class="card-text">Monitor the progress of your complaints from submission to resolution.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                <h5 class="card-title">View Schedules</h5>
+                <p class="card-text">Check garbage collection schedules for your area and stay informed.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

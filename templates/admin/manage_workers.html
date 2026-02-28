@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Manage Workers - TrackMyWaste{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="fas fa-user-tie"></i> Manage Workers
+</h2>
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Add New Worker</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_worker') }}">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Name *</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">Phone *</label>
+                    <input type="tel" class="form-control" name="phone" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">Areas *</label>
+                    <input type="text" class="form-control" name="areas" placeholder="Area1, Area2" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label">Vehicle Info</label>
+                    <input type="text" class="form-control" name="vehicle_info">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Add Worker</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-success">
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Areas Assigned</th>
+                        <th>Vehicle Info</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for worker in workers %}
+                        <tr>
+                            <td>{{ worker.name }}</td>
+                            <td>{{ worker.phone }}</td>
+                            <td>{{ worker.areas_assigned|join(', ') }}</td>
+                            <td>{{ worker.vehicle_info or 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if worker.is_active else 'secondary' }}">
+                                    {{ 'Active' if worker.is_active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.delete_worker', worker_id=worker._id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

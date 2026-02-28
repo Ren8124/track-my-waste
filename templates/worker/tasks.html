@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Tasks</h2>
+<table>
+  <tr><th>Description</th><th>Area</th><th>Status</th><th>Action</th></tr>
+  {% for t in tasks %}
+  <tr>
+    <td>{{ t.description }}</td>
+    <td>{{ t.area }}</td>
+    <td>{{ t.status }}</td>
+    <td>
+      <form method="post" action="{{ url_for('workers.update_task_status', task_id=str(t._id)) }}">
+        <select name="status">
+          <option value="pending" {% if t.status=='pending' %}selected{% endif %}>Pending</option>
+          <option value="in_progress" {% if t.status=='in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="completed" {% if t.status=='completed' %}selected{% endif %}>Completed</option>
+        </select>
+        <button type="submit">Update</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">No tasks assigned.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

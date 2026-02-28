@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Worker Dashboard - TrackMyWaste{% endblock %}
+
+{% block content %}
+<!-- Complaint Description Modal -->
+<div class="modal fade" id="complaintDescriptionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Description:</h6>
+                    <p id="complaintFullDescription" class="text-break"></p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Area:</strong>
+                        <p id="complaintArea"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Priority:</strong>
+                        <p id="complaintPriority"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Date:</strong>
+                        <p id="complaintDate"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-4">
+    <i class="fas fa-toolbox"></i> Worker Dashboard
+</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Pending Tasks</h5>
+                <h2>{{ stats.pending }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">In Progress</h5>
+                <h2>{{ stats.in_progress }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Completed</h5>
+                <h2>{{ stats.completed }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Assigned Tasks</h5>
+    </div>
+    <div class="card-body">
+        {% if tasks %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Area</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                            <tr data-task-id="{{ task._id }}">
+                                <td>
+                                    <span class="complaint-description" style="cursor: pointer;" 
+                                          data-description="{{ task.description }}"
+                                          data-area="{{ task.area }}"
+                                          data-priority="{{ task.priority }}"
+                                          data-date="{{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') }}"
+                                          data-bs-toggle="modal" data-bs-target="#complaintDescriptionModal">
+                                        {{ task.description[:50] + '...' if task.description|length > 50 else task.description }}
+                                    </span>
+                                </td>
+                                <td>{{ task.area }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if task.priority == 'high' else 'warning' if task.priority == 'medium' else 'secondary' }}">
+                                        {{ task.priority }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'warning' if task.status == 'pending' else 'info' if task.status == 'in_progress' else 'success' }}">
+                                        {{ task.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('workers.update_task_status', task_id=task._id) }}" style="display:inline;">
+                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+                                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                            <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No tasks assigned yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="{{ url_for('static', filename='js/worker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/complaint-details.js') }}"></script>
+{% endblock %}

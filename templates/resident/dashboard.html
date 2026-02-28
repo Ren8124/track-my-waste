@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - TrackMyWaste{% endblock %}
+
+{% block content %}
+<!-- Complaint Description Modal -->
+<div class="modal fade" id="complaintDescriptionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complaint Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Description:</h6>
+                    <p id="complaintFullDescription" class="text-break"></p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Area:</strong>
+                        <p id="complaintArea"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Priority:</strong>
+                        <p id="complaintPriority"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Date:</strong>
+                        <p id="complaintDate"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-4">
+    <i class="fas fa-home"></i> Resident Dashboard
+</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Complaints</h5>
+                <h2>{{ stats.total }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Pending</h5>
+                <h2>{{ stats.pending }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">In Progress</h5>
+                <h2>{{ stats.in_progress }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Completed</h5>
+                <h2>{{ stats.completed }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recent Complaints</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_complaints %}
+                    <div class="list-group">
+                        {% for complaint in recent_complaints %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6>
+                                        <span role="button" class="complaint-description-link" 
+                                              style="cursor: pointer; color: inherit; text-decoration: none; font-weight: normal;"
+                                              onclick="showComplaintDescription(
+                                                  `{{ complaint.description }}`,
+                                                  `{{ complaint.area }}`,
+                                                  `{{ complaint.priority }}`,
+                                                  `{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') if complaint.created_at }}`
+                                              )">
+                                            {{ complaint.description[:50] }}...
+                                        </span>
+                                    </h6>
+                                    <span class="badge bg-{{ 'warning' if complaint.status == 'pending' else 'info' if complaint.status == 'in_progress' else 'success' }}">
+                                        {{ complaint.status }}
+                                    </span>
+                                </div>
+                                <small class="text-muted">
+                                    Area: {{ complaint.area }} | Priority: {{ complaint.priority }}
+                                    {% if complaint.worker_name %}
+                                    <br>Assigned to: {{ complaint.worker_name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ url_for('complaints.my_complaints') }}" class="btn btn-sm btn-outline-success mt-3">View All</a>
+                {% else %}
+                    <p class="text-muted">No complaints yet.</p>
+                    <a href="{{ url_for('complaints.submit') }}" class="btn btn-success">Submit First Complaint</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Collection Schedule</h5>
+            </div>
+            <div class="card-body">
+                {% if schedules %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in schedules %}
+                                <tr>
+                                    <td>{{ ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][schedule.day_of_week] }}</td>
+                                    <td>{{ schedule.time }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">No schedules available for your area.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+    <a href="{{ url_for('complaints.submit') }}" class="btn btn-success btn-lg">
+        <i class="fas fa-plus"></i> Submit New Complaint
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const currentUserId = "{{ session['user_id'] }}";
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="{{ url_for('static', filename='js/resident.js') }}"></script>
+<script src="{{ url_for('static', filename='js/complaint-details.js') }}"></script>
+{% endblock %}

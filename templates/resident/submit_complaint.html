@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Submit Complaint - TrackMyWaste{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-exclamation-circle"></i> Submit Complaint</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('complaints.submit') }}">
+                    <div class="mb-3">
+                        <label for="area" class="form-label">Area *</label>
+                        <select class="form-select" id="area" name="area" required>
+                            <option value="">Select Area</option>
+                            <option value="North Zone">North Zone</option>
+                            <option value="South Zone">South Zone</option>
+                            <option value="East Zone">East Zone</option>
+                            <option value="West Zone">West Zone</option>
+                            <option value="Central">Central</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Priority *</label>
+                        <select class="form-select" id="priority" name="priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" required 
+                                  placeholder="Describe the issue in detail..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Location (Optional)</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude">
+                            </div>
+                        </div>
+                        <small class="text-muted">You can get current location coordinates using your device's GPS.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">Submit Complaint</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

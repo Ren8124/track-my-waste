@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}My Complaints - TrackMyWaste{% endblock %}
+
+{% block content %}
+<!-- Complaint Description Modal -->
+<div class="modal fade" id="complaintDescriptionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complaint Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Description:</h6>
+                    <p id="complaintFullDescription" class="text-break"></p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Area:</strong>
+                        <p id="complaintArea"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Priority:</strong>
+                        <p id="complaintPriority"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Date:</strong>
+                        <p id="complaintDate"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-4">
+    <i class="fas fa-list"></i> My Complaints
+</h2>
+
+{% if complaints %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="table-success">
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Area</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <span role="button" class="complaint-description-link" 
+                                  style="cursor: pointer; color: inherit; text-decoration: none;"
+                                  onclick="showComplaintDescription(
+                                      `{{ complaint.description }}`,
+                                      `{{ complaint.area }}`,
+                                      `{{ complaint.priority }}`,
+                                      `{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') if complaint.created_at }}`
+                                  )">
+                                {{ complaint.description[:50] }}...
+                            </span>
+                        </td>
+                        <td>{{ complaint.area }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'danger' if complaint.priority == 'high' else 'warning' if complaint.priority == 'medium' else 'secondary' }}">
+                                {{ complaint.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'warning' if complaint.status == 'pending' else 'info' if complaint.status == 'in_progress' else 'success' }}">
+                                {{ complaint.status }}
+                            </span>
+                        </td>
+                        <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if complaint.status == 'pending' %}
+                                <form method="POST" action="{{ url_for('complaints.delete', complaint_id=complaint._id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> You haven't submitted any complaints yet.
+        <a href="{{ url_for('complaints.submit') }}" class="alert-link">Submit your first complaint</a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/complaint-details.js') }}"></script>
+{% endblock %}
