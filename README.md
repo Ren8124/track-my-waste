@@ -45,7 +45,7 @@ TrackMyWaste implements a comprehensive digital ecosystem that:
 
 ```code
 ┌─────────────────────────────────────────────────────────────┐
-│                     Client Layer (Frontend)                  │
+│                     Client Layer (Frontend)                 │
 │  ┌──────────────┬──────────────┬──────────────┐             │
 │  │   Resident   │    Worker    │    Admin     │             │
 │  │  Dashboard   │  Dashboard   │  Dashboard   │             │
@@ -592,7 +592,7 @@ def dashboard():
 ### 7.4 Worker Endpoints
 
 | Method | Endpoint | Description | Auth Required | Role |
-|--------|----------|-------------|----------------|------|
+| ------ | -------- | ----------- | ------------- | ---- |
 | GET | `/workers/dashboard` | Worker dashboard | Yes | Worker |
 | GET | `/workers/tasks` | Get assigned tasks | Yes | Worker |
 | PUT | `/workers/tasks/<id>` | Update task status | Yes | Worker |
@@ -1035,7 +1035,7 @@ python app.py --port 5001
 
 #### Issue: Email Not Sending
 
-```
+```code
 Error: SMTP authentication failed
 ```
 
@@ -1145,7 +1145,7 @@ python app.py --verbose
 
 ### 16.3 Commit Message Format
 
-```
+```code
 <type>(<scope>): <subject>
 
 <body>
@@ -1198,7 +1198,7 @@ Closes #123
 
 This project is licensed under the **MIT License**.
 
-```
+```code
 MIT License
 
 Copyright (c) 2024 TrackMyWaste Contributors
